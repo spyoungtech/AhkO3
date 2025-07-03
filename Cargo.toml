@@ -1,0 +1,14 @@
+[package]
+name = "ahko3"
+version = "0.1.0"
+edition = "2024"
+
+[workspace]
+members = [
+    "ahko3-macros",
+    "examples/adder"
+]
+
+[dependencies]
+ahko3-macros = {path = "ahko3-macros"}
+
