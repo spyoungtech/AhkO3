@@ -28,14 +28,14 @@ fn get_adder_ahk_location() -> PathBuf {
     let current_file_path = file!();
     let path = Path::new(current_file_path);
     let grandparent_path = path.parent().and_then(Path::parent).expect("Failed to find grandparent directory");
-    grandparent_path.join("adder.ahk").iter().skip(2).collect()
+    grandparent_path.join("adder.ahk")
 }
 
 fn get_dll_location() -> PathBuf {
     let current_file_path = file!();
     let path = Path::new(current_file_path);
     let grandparent_path = path.parent().and_then(Path::parent).expect("Failed to find grandparent directory");
-    grandparent_path.join("target").join("x86_64-pc-windows-gnu").join("debug").join("adder.dll").iter().skip(2).collect()
+    grandparent_path.join("target").join("x86_64-pc-windows-gnu").join("debug").join("adder.dll")
 }
 
 fn make_script(script_text: &str) -> String {

@@ -9,3 +9,4 @@ crate-type = ["cdylib"]
 [dependencies]
 ahko3 = {path = "../.." }
 
+[workspace]
