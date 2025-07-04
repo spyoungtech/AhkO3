@@ -6,16 +6,27 @@ use syn::{parse_macro_input, ItemFn, ReturnType, Type, FnArg, Pat};
 
 fn get_ahk_type(ty: &Type) -> proc_macro2::TokenStream {
     match ty {
-        Type::Path(type_path) if type_path.path.segments.last().unwrap().ident == "String" => {
-            quote!(*const u16)
+        Type::Path(type_path)  => {
+            let ident = &type_path.path.segments.last().unwrap().ident;
+            match ident.to_string().as_str() {
+                "String" => {
+                    quote! { *const u16 }
+                }
+                "i64" | "i32" | "u32" | "u64" | "f64" | "f32" => {
+                    quote! { #ident }
+                }
+                "isize" | "usize" => {
+                    quote! { i64 }
+                }
+                _ => {
+                    panic!("Unsupported type in AHK function ({:?})", ident)
+                }
+            }
         }
-        Type::Path(type_path) if type_path.path.segments.last().unwrap().ident == "i64" => {
-            quote!(i64)
-        }
-        // Add more type mappings as needed
         _ => panic!("Unsupported type in AHK function"),
     }
 }
+
 
 fn get_ahk_return_type(ty: &Type) -> proc_macro2::TokenStream {
     match ty {
