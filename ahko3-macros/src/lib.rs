@@ -88,7 +88,7 @@ fn get_parameter_conversion_code(param_name: &Ident, ty: &Type) -> proc_macro2::
 
                 "bool" => {
                     quote! {
-                        if #param_name == 1 { true } else if #param_name == 2 { false } else { panic!("invalid bool value received") }
+                        if #param_name == 1 { true } else if #param_name == 0 { false } else { panic!("invalid bool value received") }
                     }
                 }
 
