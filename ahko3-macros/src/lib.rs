@@ -46,6 +46,7 @@ fn get_ahk_return_type(ty: &Type) -> proc_macro2::TokenStream {
                 "u64" => {quote! { std::ffi::c_ulonglong }}
                 "usize" => {quote! { std::ffi::c_longlong }}
                 "isize" => {quote! { std::ffi::c_longlong }}
+                "bool" => {quote! { std::ffi::c_char }}
 
                 _ => panic!("Unsupported return type in AHK function ({:?})", ident),
             }
