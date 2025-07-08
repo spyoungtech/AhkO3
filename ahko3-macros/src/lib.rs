@@ -3,7 +3,7 @@ use proc_macro2::Ident;
 use quote::{quote, format_ident, ToTokens};
 use syn::{parse_macro_input, ItemFn, ReturnType, Type, FnArg, Pat};
 
-fn get_ahk_type(ty: &Type) -> proc_macro2::TokenStream {
+fn get_ahk_parameter_type(ty: &Type) -> proc_macro2::TokenStream {
     match ty {
         Type::Path(type_path)  => {
             let ident = &type_path.path.segments.last().unwrap().ident;
@@ -17,6 +17,11 @@ fn get_ahk_type(ty: &Type) -> proc_macro2::TokenStream {
                 "isize" | "usize" => {
                     quote! { i64 }
                 }
+
+                "bool" => {
+                    quote! { i8 }
+                }
+
                 _ => {
                     panic!("Unsupported type in AHK function ({:?})", ident)
                 }
@@ -79,7 +84,13 @@ fn get_parameter_conversion_code(param_name: &Ident, ty: &Type) -> proc_macro2::
 
                 "usize" => { quote! {
                     #param_name as usize
-                }}
+                }},
+
+                "bool" => {
+                    quote! {
+                        if #param_name == 1 { true } else if #param_name == 2 { false } else { panic!("invalid bool value received") }
+                    }
+                }
 
                 // as a last resort, fallback to .into -- if this conversion is not possible,
                 //  it will be a compilation error
@@ -113,7 +124,7 @@ struct FunctionArgument {
 
 impl FunctionArgument {
     fn get_ahk_type(&self) -> proc_macro2::TokenStream {
-        get_ahk_type(&self.arg_type)
+        get_ahk_parameter_type(&self.arg_type)
     }
 }
 
