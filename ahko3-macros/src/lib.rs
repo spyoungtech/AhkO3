@@ -1,5 +1,4 @@
 use proc_macro::TokenStream;
-use std::process::id;
 use proc_macro2::Ident;
 use quote::{quote, format_ident, ToTokens};
 use syn::{parse_macro_input, ItemFn, ReturnType, Type, FnArg, Pat};
@@ -56,7 +55,7 @@ fn get_ahk_return_type(ty: &Type) -> proc_macro2::TokenStream {
     }
 }
 
-fn get_parameter_conversion_code(param_name: &syn::Ident, ty: &Type) -> proc_macro2::TokenStream {
+fn get_parameter_conversion_code(param_name: &Ident, ty: &Type) -> proc_macro2::TokenStream {
     match ty {
         Type::Path(type_path) => {
             let ident = &type_path.path.segments.last().unwrap().ident;
@@ -81,7 +80,13 @@ fn get_parameter_conversion_code(param_name: &syn::Ident, ty: &Type) -> proc_mac
                     #param_name as usize
                 }}
 
-                _ => panic!("Unsupported type conversion in AHK function ({:?} {:?})", param_name, ident),
+                // as a last resort, fallback to .into -- if this conversion is not possible,
+                //  it will be a compilation error
+                _ => {
+                    quote! {
+                        #param_name.into()
+                    }
+                },
             }
         }
         _ => panic!("Unsupported type conversion in AHK function ({:?} {:?})", param_name, ty.to_token_stream()),
