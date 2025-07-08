@@ -69,6 +69,18 @@ fn get_parameter_conversion_code(param_name: &syn::Ident, ty: &Type) -> proc_mac
 
                 // these can be left as-is; AHK can call with the appropriate type, no conversions needed
                 "i64" | "i32" | "u32" | "u64" | "f64" | "f32" => {quote! { #param_name }}
+
+
+                // isize and usize will be passed from AHK as Int64, so we need to convert them back
+                //  for the rust function call
+                "isize" => { quote! {
+                    #param_name as isize
+                }}
+
+                "usize" => { quote! {
+                    #param_name as usize
+                }}
+
                 _ => panic!("Unsupported type conversion in AHK function ({:?} {:?})", param_name, ident),
             }
         }
